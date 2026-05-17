@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>Woordenschat</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f1a;
+  --surface:#1a1a2e;
+  --surface2:#252542;
+  --surface3:#2e2e50;
+  --accent:#e8a838;
+  --accent-glow:rgba(232,168,56,.15);
+  --accent2:#f0c060;
+  --text:#e8e6e1;
+  --text-dim:#8a8a9a;
+  --danger:#e05555;
+  --danger-bg:rgba(224,85,85,.12);
+  --success:#4ecb71;
+  --success-bg:rgba(78,203,113,.12);
+  --info:#5b9ef0;
+  --info-bg:rgba(91,158,240,.12);
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --font:'Segoe UI','Helvetica Neue',sans-serif;
+}
+html{font-size:16px}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100dvh;-webkit-tap-highlight-color:transparent;overflow-x:hidden;
+}
+.app{max-width:460px;margin:0 auto;padding:0 16px 100px}
+
+/* HEADER */
+.top-bar{display:flex;align-items:center;padding:18px 0 10px;position:relative}
+.hamburger{
+  width:44px;height:44px;background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:0;z-index:1001;-webkit-user-select:none;user-select:none;
+}
+.hamburger span{
+  display:block;width:22px;height:2.5px;background:var(--text);
+  border-radius:2px;transition:transform .3s,opacity .2s;
+}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.top-title{flex:1;text-align:center;margin-right:44px}
+.top-title h1{
+  font-size:1.4rem;font-weight:800;letter-spacing:-.5px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.top-title p{font-size:.7rem;color:var(--text-dim);margin-top:2px;letter-spacing:.5px}
+
+/* SIDE MENU */
+.menu-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
+.menu-overlay.open{opacity:1;pointer-events:auto}
+.side-menu{
+  position:fixed;top:0;left:0;bottom:0;width:280px;
+  background:var(--surface);z-index:1000;transform:translateX(-100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  padding:80px 0 32px;border-right:1px solid rgba(255,255,255,.06);
+  box-shadow:4px 0 24px rgba(0,0,0,.4);overflow-y:auto;
+}
+.side-menu.open{transform:translateX(0)}
+.menu-label{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--text-dim);padding:20px 24px 8px;font-weight:700;
+}
+.menu-item{
+  display:flex;align-items:center;gap:14px;padding:14px 24px;
+  background:none;border:none;width:100%;text-align:left;
+  color:var(--text);font-size:.95rem;font-weight:600;
+  font-family:var(--font);cursor:pointer;transition:background .15s;
+  -webkit-user-select:none;user-select:none;
+}
+.menu-item:active{background:var(--surface2)}
+.menu-item.active{color:var(--accent);background:var(--accent-glow)}
+.menu-item .mi-icon{font-size:1.2rem;width:28px;text-align:center}
+.menu-divider{height:1px;background:rgba(255,255,255,.06);margin:8px 20px}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* SHARED */
+.section-card{
+  background:var(--surface);border-radius:var(--radius);
+  padding:20px;margin-top:16px;
+  border:1px solid rgba(255,255,255,.04);box-shadow:var(--shadow);
+}
+.section-title{
+  font-size:.85rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);margin-bottom:16px;font-weight:700;
+}
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:.75rem;color:var(--text-dim);
+  margin-bottom:6px;letter-spacing:.3px;font-weight:600;
+}
+.field input{
+  width:100%;padding:14px 16px;background:var(--surface2);
+  border:1.5px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);
+  color:var(--text);font-size:1rem;font-family:var(--font);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.field input::placeholder{color:rgba(138,138,154,.5)}
+.btn-row{display:flex;gap:10px;margin-top:18px}
+.btn{
+  flex:1;padding:14px 12px;border:none;border-radius:var(--radius-sm);
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .12s,box-shadow .2s,background .2s;
+  font-family:var(--font);-webkit-user-select:none;user-select:none;
+}
+.btn:active{transform:scale(.96)}
+.btn-listen{
+  background:var(--surface3);color:var(--text);
+  border:1.5px solid rgba(255,255,255,.08);flex:.45;
+}
+.btn-listen:active{background:var(--surface2)}
+.btn-save{
+  background:linear-gradient(135deg,var(--accent),#d4922e);
+  color:#1a1a2e;flex:.55;box-shadow:0 4px 16px rgba(232,168,56,.25);
+}
+.btn-save:active{box-shadow:0 2px 8px rgba(232,168,56,.15)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surface2);color:var(--text);
+  padding:12px 24px;border-radius:40px;font-size:.85rem;font-weight:600;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;opacity:0;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;
+  pointer-events:none;border:1px solid rgba(255,255,255,.08);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{border-color:var(--danger);color:var(--danger)}
+.toast.success{border-color:var(--success);color:var(--success)}
+.toast.info{border-color:var(--info);color:var(--info)}
+
+/* WORD LIST */
+.list-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;padding:0 4px;
+}
+.list-header h2{
+  font-size:.85rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);font-weight:700;
+}
+.word-count{
+  font-size:.75rem;color:var(--text-dim);
+  background:var(--surface2);padding:4px 12px;border-radius:20px;
+}
+.empty-state{
+  text-align:center;padding:48px 20px;
+  color:var(--text-dim);font-size:.9rem;line-height:1.6;
+}
+.empty-state .empty-icon{font-size:2.5rem;display:block;margin-bottom:12px;opacity:.5}
+.cards-container{display:flex;flex-direction:column;gap:12px}
+
+/* FLASHCARD */
+.card{perspective:800px;cursor:pointer}
+.card-inner{
+  position:relative;width:100%;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+  transform-style:preserve-3d;
+}
+.card.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{
+  min-height:90px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;
+  border:1px solid rgba(255,255,255,.05);box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.card-front{position:relative;background:var(--surface)}
+.card-back{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background:var(--surface2);transform:rotateY(180deg);
+}
+.card-word-area{flex:1;min-width:0}
+.card-word{font-size:1.15rem;font-weight:700;line-height:1.3;word-break:break-word}
+.card-front .card-word{color:var(--text)}
+.card-back .card-word{color:var(--accent2)}
+.card-lang{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-dim);margin-bottom:3px;font-weight:600;
+}
+.card-hint{font-size:.7rem;color:var(--text-dim);margin-top:5px;font-style:italic;opacity:.7}
+.card-actions{display:flex;flex-direction:column;gap:5px;margin-left:10px;flex-shrink:0}
+.card-btn{
+  width:40px;height:40px;border:none;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.05);color:var(--text);font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .1s;-webkit-user-select:none;user-select:none;
+}
+.card-btn:active{transform:scale(.9)}
+.card-btn.speak-btn:active{background:var(--accent-glow)}
+.card-btn.edit-btn:active{background:rgba(100,160,255,.15)}
+.card-btn.del-btn{color:var(--danger)}
+.card-btn.del-btn:active{background:var(--danger-bg)}
+
+/* EDIT PANEL */
+.edit-panel{
+  position:relative;z-index:10;background:var(--surface3);
+  border-radius:0 0 var(--radius) var(--radius);
+  padding:16px;margin-top:-6px;
+  border:1px solid rgba(255,255,255,.05);border-top:none;
+  display:none;animation:slideDown .25s ease;
+}
+.edit-panel.open{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.edit-fields{display:flex;gap:10px}
+.edit-fields input{
+  flex:1;padding:12px 14px;background:var(--surface);
+  border:1.5px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);
+  color:var(--text);font-size:.9rem;font-family:var(--font);outline:none;min-width:0;
+}
+.edit-fields input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.edit-save{
+  margin-top:12px;width:100%;padding:12px;background:var(--accent);
+  color:#1a1a2e;border:none;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:transform .1s;
+}
+.edit-save:active{transform:scale(.97)}
+
+/* SEARCH */
+.search-bar{margin-bottom:14px}
+.search-bar input{
+  width:100%;padding:12px 16px 12px 42px;background:var(--surface);
+  border:1.5px solid rgba(255,255,255,.05);border-radius:var(--radius-sm);
+  color:var(--text);font-size:.9rem;font-family:var(--font);
+  outline:none;transition:border-color .2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%238a8a9a' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='5'/%3E%3Cline x1='12' y1='12' x2='16' y2='16'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:14px center;
+}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar input::placeholder{color:rgba(138,138,154,.4)}
+
+/* DIALOG */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.overlay.open{display:flex}
+.dialog{
+  background:var(--surface);border-radius:var(--radius);
+  padding:28px 24px;max-width:320px;width:100%;text-align:center;
+  box-shadow:0 16px 48px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.06);
+}
+.dialog p{font-size:.95rem;line-height:1.5;margin-bottom:20px;color:var(--text)}
+.dialog-btns{display:flex;gap:10px}
+.dialog-btns button{
+  flex:1;padding:12px;border:none;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:transform .1s;
+}
+.dialog-btns button:active{transform:scale(.96)}
+.dialog-cancel{background:var(--surface3);color:var(--text)}
+.dialog-confirm{background:var(--danger);color:#fff}
+
+/* TTS WARNING */
+.tts-warning{
+  background:rgba(232,168,56,.08);border:1px solid rgba(232,168,56,.2);
+  border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;
+  font-size:.8rem;color:var(--accent2);line-height:1.5;display:none;
+}
+.tts-warning.show{display:block}
+
+/* PWA INSTALL BANNER */
+.install-banner{
+  background:var(--info-bg);border:1px solid rgba(91,158,240,.2);
+  border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;
+  display:none;align-items:center;gap:12px;
+}
+.install-banner.show{display:flex}
+.install-banner p{flex:1;font-size:.8rem;color:var(--info);line-height:1.4}
+.install-banner button{
+  padding:8px 16px;background:var(--info);color:#fff;border:none;
+  border-radius:var(--radius-sm);font-size:.8rem;font-weight:700;
+  cursor:pointer;font-family:var(--font);white-space:nowrap;
+}
+.install-banner .dismiss{
+  background:none;color:var(--text-dim);padding:4px 8px;font-size:1.1rem;
+}
+
+/* ===== QUIZ ===== */
+.quiz-status{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-progress{font-size:.8rem;color:var(--text-dim);font-weight:600}
+.quiz-score{display:flex;gap:12px;font-size:.8rem;font-weight:700}
+.quiz-score .correct{color:var(--success)}
+.quiz-score .wrong{color:var(--danger)}
+.quiz-speaker{width:100%;display:flex;flex-direction:column;align-items:center;padding:24px 0 20px}
+.quiz-speaker-btn{
+  width:90px;height:90px;border-radius:50%;background:var(--surface2);
+  border:2px solid var(--accent);color:var(--accent);font-size:2.4rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 var(--accent-glow);
+  -webkit-user-select:none;user-select:none;
+}
+.quiz-speaker-btn:active{transform:scale(.92)}
+.quiz-speaker-btn.playing{box-shadow:0 0 0 12px var(--accent-glow)}
+.quiz-speaker-hint{margin-top:10px;font-size:.75rem;color:var(--text-dim);font-style:italic}
+.quiz-inputs{margin-top:8px}.quiz-inputs .field{margin-bottom:12px}
+.quiz-check-btn{
+  width:100%;padding:15px;border:none;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--accent),#d4922e);color:#1a1a2e;
+  font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  margin-top:6px;transition:transform .12s;box-shadow:0 4px 16px rgba(232,168,56,.25);
+}
+.quiz-check-btn:active{transform:scale(.96)}
+.quiz-next-btn{
+  width:100%;padding:15px;border:none;border-radius:var(--radius-sm);
+  background:var(--surface3);color:var(--text);font-size:1rem;font-weight:700;
+  cursor:pointer;font-family:var(--font);margin-top:10px;
+  border:1.5px solid rgba(255,255,255,.08);transition:transform .12s;
+}
+.quiz-next-btn:active{transform:scale(.96)}
+.quiz-feedback{
+  border-radius:var(--radius-sm);padding:16px;margin-top:14px;
+  display:none;animation:slideDown .25s ease;
+}
+.quiz-feedback.show{display:block}
+.quiz-feedback.is-correct{background:var(--success-bg);border:1px solid rgba(78,203,113,.25)}
+.quiz-feedback.is-wrong{background:var(--danger-bg);border:1px solid rgba(224,85,85,.25)}
+.quiz-feedback .fb-icon{font-size:1.3rem;margin-bottom:6px}
+.quiz-feedback .fb-text{font-size:.85rem;line-height:1.5}
+.quiz-feedback .fb-text strong{font-weight:700}
+.quiz-feedback.is-correct .fb-text{color:var(--success)}
+.quiz-feedback.is-wrong .fb-text{color:var(--danger)}
+.quiz-feedback .fb-answer{
+  margin-top:8px;padding:10px 14px;background:rgba(255,255,255,.04);
+  border-radius:8px;font-size:.85rem;color:var(--text);line-height:1.5;
+}
+.quiz-end{text-align:center;padding:32px 16px}
+.quiz-end .end-icon{font-size:3rem;margin-bottom:12px}
+.quiz-end h3{font-size:1.2rem;margin-bottom:6px;color:var(--text)}
+.quiz-end .end-score{
+  font-size:2rem;font-weight:800;margin:12px 0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.quiz-end .end-detail{font-size:.85rem;color:var(--text-dim);line-height:1.6}
+.quiz-restart-btn{
+  margin-top:20px;padding:14px 32px;border:none;border-radius:var(--radius-sm);
+  background:var(--accent);color:#1a1a2e;font-size:.95rem;font-weight:700;
+  cursor:pointer;font-family:var(--font);transition:transform .12s;
+}
+.quiz-restart-btn:active{transform:scale(.96)}
+
+/* ===== STATS ===== */
+.stats-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-box{
+  background:var(--surface);border-radius:var(--radius-sm);
+  padding:16px 10px;text-align:center;border:1px solid rgba(255,255,255,.04);
+}
+.stat-box .stat-val{font-size:1.4rem;font-weight:800;color:var(--accent)}
+.stat-box .stat-label{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-dim);margin-top:4px;font-weight:600;
+}
+.stats-list{display:flex;flex-direction:column;gap:8px}
+.stat-word-row{
+  background:var(--surface);border-radius:var(--radius-sm);
+  padding:14px 16px;border:1px solid rgba(255,255,255,.04);
+}
+.stat-word-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.stat-word-name{font-size:.95rem;font-weight:700}
+.stat-word-pct{
+  font-size:.85rem;font-weight:800;padding:3px 10px;
+  border-radius:20px;min-width:52px;text-align:center;
+}
+.stat-word-pct.high{background:var(--success-bg);color:var(--success)}
+.stat-word-pct.mid{background:rgba(232,168,56,.12);color:var(--accent)}
+.stat-word-pct.low{background:var(--danger-bg);color:var(--danger)}
+.stat-word-pct.none{background:var(--surface2);color:var(--text-dim)}
+.stat-word-en{font-size:.75rem;color:var(--text-dim);margin-bottom:8px}
+.stat-bar-bg{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.stat-bar-fill.high{background:var(--success)}
+.stat-bar-fill.mid{background:var(--accent)}
+.stat-bar-fill.low{background:var(--danger)}
+.stat-word-detail{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text-dim)}
+.stats-empty{
+  text-align:center;padding:48px 20px;
+  color:var(--text-dim);font-size:.9rem;line-height:1.6;
+}
+.stats-empty .empty-icon{font-size:2.5rem;display:block;margin-bottom:12px;opacity:.5}
+.stats-reset{
+  margin-top:24px;width:100%;padding:13px;
+  background:var(--danger-bg);color:var(--danger);
+  border:1.5px solid rgba(224,85,85,.2);border-radius:var(--radius-sm);
+  font-size:.85rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:transform .1s;
+}
+.stats-reset:active{transform:scale(.97)}
+
+/* ===== CSV / IMPORT-EXPORT ===== */
+.csv-status{
+  background:var(--surface);border-radius:var(--radius-sm);
+  padding:14px 16px;margin-top:16px;
+  border:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:12px;
+}
+.csv-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+}
+.csv-dot.synced{background:var(--success);box-shadow:0 0 6px var(--success)}
+.csv-dot.empty{background:var(--text-dim)}
+.csv-info{flex:1;font-size:.8rem;color:var(--text-dim);line-height:1.4}
+.csv-info strong{color:var(--text);font-weight:700}
+.ie-buttons{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.ie-btn{
+  width:100%;padding:15px;border:none;border-radius:var(--radius-sm);
+  font-size:.95rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:transform .12s;
+}
+.ie-btn:active{transform:scale(.96)}
+.ie-btn-export{
+  background:var(--success-bg);color:var(--success);
+  border:1.5px solid rgba(78,203,113,.2);
+}
+.ie-btn-import{
+  background:var(--info-bg);color:var(--info);
+  border:1.5px solid rgba(91,158,240,.2);
+}
+.ie-btn-import-replace{
+  background:var(--danger-bg);color:var(--danger);
+  border:1.5px solid rgba(224,85,85,.2);
+  font-size:.85rem;
+}
+.import-info{
+  font-size:.75rem;color:var(--text-dim);line-height:1.5;
+  margin-top:8px;padding:0 4px;
+}
+#csvFileInput{display:none}
+</style>
+</head>
+<body>
+
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="side-menu" id="sideMenu">
+  <div class="menu-label">Navigatie</div>
+  <button class="menu-item active" data-page="words"><span class="mi-icon">📖</span> Woordenlijst</button>
+  <button class="menu-item" data-page="quiz"><span class="mi-icon">🎧</span> Luisteroefening</button>
+  <button class="menu-item" data-page="stats"><span class="mi-icon">📊</span> Statistieken</button>
+  <button class="menu-item" data-page="csv"><span class="mi-icon">📁</span> Importeren / Exporteren</button>
+  <div class="menu-divider"></div>
+  <div class="menu-label">Info</div>
+  <button class="menu-item" style="pointer-events:none;opacity:.7">
+    <span class="mi-icon">🌷</span> <span id="menuTotalWords">0 woorden opgeslagen</span>
+  </button>
+</nav>
+
+<div class="app">
+  <div class="top-bar">
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="top-title"><h1>Woordenschat</h1><p>Leer Nederlands — offline</p></div>
+  </div>
+
+  <div class="tts-warning" id="ttsWarning">⚠️ Geen Nederlandse stem gevonden. Installeer een Nederlands taalpakket in je telefooninstellingen.</div>
+
+  <div class="install-banner" id="installBanner">
+    <p>Installeer als app op je telefoon!</p>
+    <button id="installBtn">Installeer</button>
+    <button class="dismiss" id="installDismiss">✕</button>
+  </div>
+
+  <!-- ===== PAGE: WORDS ===== -->
+  <div class="page active" id="page-words">
+    <section class="section-card">
+      <h2 class="section-title">Nieuw woord</h2>
+      <div class="field"><label for="nlWord">Nederlands</label><input type="text" id="nlWord" placeholder="Typ een woord in het Nederlands" autocomplete="off" enterkeyhint="next"></div>
+      <div class="field"><label for="enWord">Engels</label><input type="text" id="enWord" placeholder="Engelse vertaling" autocomplete="off" enterkeyhint="done"></div>
+      <div class="btn-row">
+        <button class="btn btn-listen" id="btnListen">🔊 Luister</button>
+        <button class="btn btn-save" id="btnSave">💾 Opslaan</button>
+      </div>
+    </section>
+    <section style="margin-top:24px">
+      <div class="list-header"><h2>Mijn woorden</h2><span class="word-count" id="wordCount">0 woorden</span></div>
+      <div class="search-bar"><input type="text" id="searchInput" placeholder="Zoek een woord…" autocomplete="off"></div>
+      <div id="cardsList" class="cards-container"></div>
+      <div class="empty-state" id="emptyState"><span class="empty-icon">🌷</span>Nog geen woorden opgeslagen.<br>Voeg je eerste woord hierboven toe!</div>
+    </section>
+  </div>
+
+  <!-- ===== PAGE: QUIZ ===== -->
+  <div class="page" id="page-quiz">
+    <section class="section-card" id="quizStart">
+      <h2 class="section-title">🎧 Luisteroefening</h2>
+      <p style="font-size:.9rem;color:var(--text-dim);line-height:1.6;margin-bottom:18px">Luister naar de uitspraak en schrijf het woord in het Nederlands en de vertaling in het Engels. Alle woorden komen aan bod!</p>
+      <button class="btn btn-save" id="quizStartBtn" style="flex:none;width:100%">▶ Start oefening</button>
+      <p id="quizMinWords" style="font-size:.8rem;color:var(--danger);margin-top:12px;display:none">Je hebt minstens 1 woord nodig om te oefenen.</p>
+    </section>
+    <section class="section-card" id="quizActive" style="display:none">
+      <div class="quiz-status">
+        <span class="quiz-progress" id="quizProgress"></span>
+        <div class="quiz-score"><span class="correct" id="quizCorrectCount">✓ 0</span><span class="wrong" id="quizWrongCount">✗ 0</span></div>
+      </div>
+      <div class="quiz-speaker"><button class="quiz-speaker-btn" id="quizSpeakBtn">🔊</button><span class="quiz-speaker-hint">Tik om te luisteren</span></div>
+      <div class="quiz-inputs">
+        <div class="field"><label>🇳🇱 Schrijf in het Nederlands</label><input type="text" id="quizNlInput" placeholder="Nederlands woord…" autocomplete="off" enterkeyhint="next"></div>
+        <div class="field"><label>🇬🇧 Schrijf de vertaling in het Engels</label><input type="text" id="quizEnInput" placeholder="Engelse vertaling…" autocomplete="off" enterkeyhint="done"></div>
+      </div>
+      <button class="quiz-check-btn" id="quizCheckBtn">Controleer</button>
+      <div class="quiz-feedback" id="quizFeedback"><div class="fb-icon" id="fbIcon"></div><div class="fb-text" id="fbText"></div><div class="fb-answer" id="fbAnswer"></div></div>
+      <button class="quiz-next-btn" id="quizNextBtn" style="display:none">Volgend woord →</button>
+    </section>
+    <section class="section-card" id="quizEnd" style="display:none">
+      <div class="quiz-end">
+        <div class="end-icon" id="endIcon">🎉</div><h3>Oefening voltooid!</h3>
+        <div class="end-score" id="endScore">0%</div>
+        <div class="end-detail" id="endDetail"></div>
+        <button class="quiz-restart-btn" id="quizRestartBtn">🔁 Opnieuw oefenen</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PAGE: STATS ===== -->
+  <div class="page" id="page-stats">
+    <section style="margin-top:16px">
+      <h2 class="section-title" style="padding:0 4px;margin-bottom:16px">📊 Statistieken</h2>
+      <div class="stats-summary">
+        <div class="stat-box"><div class="stat-val" id="statTotal">0</div><div class="stat-label">Woorden</div></div>
+        <div class="stat-box"><div class="stat-val" id="statPracticed">0</div><div class="stat-label">Geoefend</div></div>
+        <div class="stat-box"><div class="stat-val" id="statAvg">–</div><div class="stat-label">Gemiddeld</div></div>
+      </div>
+      <div class="stats-list" id="statsList"></div>
+      <div class="stats-empty" id="statsEmpty"><span class="empty-icon">📊</span>Nog geen statistieken.<br>Start een luisteroefening!</div>
+      <button class="stats-reset" id="statsResetBtn">🗑 Statistieken resetten</button>
+    </section>
+  </div>
+
+  <!-- ===== PAGE: CSV ===== -->
+  <div class="page" id="page-csv">
+    <section style="margin-top:16px">
+      <h2 class="section-title" style="padding:0 4px;margin-bottom:4px">📁 Importeren / Exporteren</h2>
+
+      <div class="csv-status" id="csvStatus">
+        <div class="csv-dot empty" id="csvDot"></div>
+        <div class="csv-info" id="csvInfo">Geen woorden opgeslagen.</div>
+      </div>
+
+      <div class="ie-buttons">
+        <button class="ie-btn ie-btn-export" id="csvExportBtn">📤 CSV exporteren</button>
+        <button class="ie-btn ie-btn-import" id="csvImportBtn">📥 CSV importeren</button>
+        <input type="file" id="csvFileInput" accept=".csv,text/csv">
+      </div>
+
+      <p class="import-info">
+        ⚠️ Importeren vervangt alle bestaande woorden.<br>
+        CSV formaat: <strong>Nederlands;Engels</strong> (één woord per regel, puntkomma als scheidingsteken).
+      </p>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay">
+  <div class="dialog"><p id="dialogMsg"></p>
+    <div class="dialog-btns">
+      <button class="dialog-cancel" id="dialogCancel">Annuleren</button>
+      <button class="dialog-confirm" id="dialogConfirm">Bevestigen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===== DB ===== */
+  const DB="woordenschat",VER=2,ST_W="woorden",ST_S="stats";
+  let db=null;
+
+  function openDB(){
+    return new Promise((res,rej)=>{
+      const r=indexedDB.open(DB,VER);
+      r.onupgradeneeded=e=>{
+        const d=e.target.result;
+        if(!d.objectStoreNames.contains(ST_W)){
+          const s=d.createObjectStore(ST_W,{keyPath:"id",autoIncrement:true});
+          s.createIndex("nl","nl");s.createIndex("date","date");
+        }
+        if(!d.objectStoreNames.contains(ST_S))d.createObjectStore(ST_S,{keyPath:"wordId"});
+      };
+      r.onsuccess=e=>{db=e.target.result;res(db)};
+      r.onerror=e=>rej(e.target.error);
+    });
+  }
+
+  const txW=(mode)=>db.transaction(ST_W,mode).objectStore(ST_W);
+  const txS=(mode)=>db.transaction(ST_S,mode).objectStore(ST_S);
+  const txWS=(mode)=>{const t=db.transaction([ST_W,ST_S],mode);return[t.objectStore(ST_W),t.objectStore(ST_S),t]};
+
+  function addWord(nl,en){
+    return new Promise((res,rej)=>{
+      const tx=db.transaction(ST_W,"readwrite");
+      const req=tx.objectStore(ST_W).add({nl:nl.trim(),en:en.trim(),date:Date.now()});
+      req.onsuccess=()=>res(req.result);
+      tx.onerror=e=>rej(e.target.error);
+    });
+  }
+  function updateWord(id,nl,en){
+    return new Promise((res,rej)=>{
+      const st=txW("readwrite");const g=st.get(id);
+      g.onsuccess=()=>{const r=g.result;if(r){r.nl=nl.trim();r.en=en.trim();st.put(r).onsuccess=()=>res()}};
+      g.onerror=e=>rej(e.target.error);
+    });
+  }
+  function deleteWord(id){
+    return new Promise((res,rej)=>{
+      const[w,s,tx]=txWS("readwrite");w.delete(id);s.delete(id);
+      tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);
+    });
+  }
+  function getAllWords(){
+    return new Promise((res,rej)=>{
+      const r=txW("readonly").getAll();
+      r.onsuccess=()=>res(r.result||[]);r.onerror=e=>rej(e.target.error);
+    });
+  }
+  function getAllStats(){
+    return new Promise((res,rej)=>{
+      const r=txS("readonly").getAll();
+      r.onsuccess=()=>res(r.result||[]);r.onerror=e=>rej(e.target.error);
+    });
+  }
+  function saveStats(wid,c,w){
+    return new Promise((res,rej)=>{
+      const st=txS("readwrite");const g=st.get(wid);
+      g.onsuccess=()=>{
+        const ex=g.result||{wordId:wid,correct:0,wrong:0};
+        ex.correct+=c;ex.wrong+=w;st.put(ex).onsuccess=()=>res();
+      };g.onerror=e=>rej(e.target.error);
+    });
+  }
+  function clearAllStats(){
+    return new Promise((res,rej)=>{
+      const tx=db.transaction(ST_S,"readwrite");tx.objectStore(ST_S).clear();
+      tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);
+    });
+  }
+  function clearAllWords(){
+    return new Promise((res,rej)=>{
+      const tx=db.transaction([ST_W,ST_S],"readwrite");
+      tx.objectStore(ST_W).clear();tx.objectStore(ST_S).clear();
+      tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);
+    });
+  }
+  function bulkAddWords(list){
+    return new Promise((res,rej)=>{
+      const tx=db.transaction(ST_W,"readwrite");
+      const st=tx.objectStore(ST_W);
+      list.forEach(w=>st.add({nl:w.nl.trim(),en:w.en.trim(),date:Date.now()}));
+      tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);
+    });
+  }
+
+  /* ===== TTS ===== */
+  let nlVoice=null;
+  function findDutchVoice(){
+    const v=speechSynthesis.getVoices();
+    nlVoice=v.find(x=>x.lang&&x.lang.startsWith("nl"))||null;
+    document.getElementById("ttsWarning").classList.toggle("show",!nlVoice);
+  }
+  if(typeof speechSynthesis!=="undefined"){speechSynthesis.onvoiceschanged=findDutchVoice;findDutchVoice()}
+  function speak(t){
+    if(!t)return;speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);u.lang="nl-NL";
+    if(nlVoice)u.voice=nlVoice;u.rate=.9;u.pitch=1;speechSynthesis.speak(u);
+  }
+
+  /* ===== Toast ===== */
+  let toastT=null;
+  function showToast(m,type){
+    const t=document.getElementById("toast");t.textContent=m;
+    t.className="toast show"+(type?" "+type:"");
+    clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2400);
+  }
+
+  /* ===== Dialog ===== */
+  let confirmCb=null;const overlay=document.getElementById("overlay");
+  document.getElementById("dialogCancel").onclick=()=>{overlay.classList.remove("open");confirmCb=null};
+  document.getElementById("dialogConfirm").onclick=()=>{overlay.classList.remove("open");if(confirmCb)confirmCb();confirmCb=null};
+  function confirmDialog(msg,btn,cb){
+    document.getElementById("dialogMsg").textContent=msg;
+    document.getElementById("dialogConfirm").textContent=btn||"Bevestigen";
+    confirmCb=cb;overlay.classList.add("open");
+  }
+
+  /* ===== Menu ===== */
+  const hamburger=document.getElementById("hamburger");
+  const sideMenu=document.getElementById("sideMenu");
+  const menuOverlay=document.getElementById("menuOverlay");
+  const menuItems=document.querySelectorAll(".menu-item[data-page]");
+  function toggleMenu(o){
+    const isOpen=o!==undefined?o:!sideMenu.classList.contains("open");
+    sideMenu.classList.toggle("open",isOpen);menuOverlay.classList.toggle("open",isOpen);
+    hamburger.classList.toggle("open",isOpen);
+  }
+  hamburger.onclick=()=>toggleMenu();
+  menuOverlay.onclick=()=>toggleMenu(false);
+  function navigateTo(pid){
+    if(!pid)return;
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    const pg=document.getElementById("page-"+pid);if(pg)pg.classList.add("active");
+    menuItems.forEach(m=>m.classList.toggle("active",m.dataset.page===pid));
+    toggleMenu(false);
+    if(pid==="stats")renderStats();
+    if(pid==="quiz")resetQuizView();
+    if(pid==="csv")updateCsvStatus();
+    window.scrollTo(0,0);
+  }
+  menuItems.forEach(m=>{if(m.dataset.page)m.onclick=()=>navigateTo(m.dataset.page)});
+
+  /* ===== PWA Install ===== */
+  let deferredPrompt=null;
+  window.addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault();deferredPrompt=e;
+    document.getElementById("installBanner").classList.add("show");
+  });
+  document.getElementById("installBtn").onclick=()=>{
+    if(!deferredPrompt)return;deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{deferredPrompt=null;
+      document.getElementById("installBanner").classList.remove("show");
+    });
+  };
+  document.getElementById("installDismiss").onclick=()=>{
+    document.getElementById("installBanner").classList.remove("show");
+  };
+
+  /* ===== Service Worker ===== */
+  if("serviceWorker"in navigator){
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  }
+
+  /* ===== CSV ENGINE ===== */
+  function generateCSV(){
+    const header="Nederlands;Engels";
+    const rows=allWords.map(w=>{
+      const nl=w.nl.replace(/"/g,'""');const en=w.en.replace(/"/g,'""');
+      const wrapNl=nl.includes(";")||nl.includes('"')?'"'+nl+'"':nl;
+      const wrapEn=en.includes(";")||en.includes('"')?'"'+en+'"':en;
+      return wrapNl+";"+wrapEn;
+    });
+    return header+"\n"+rows.join("\n");
+  }
+
+  function downloadCSV(){
+    if(allWords.length===0){showToast("Geen woorden om te exporteren","error");return}
+    const csv=generateCSV();
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download="woordenschat_"+new Date().toISOString().slice(0,10)+".csv";
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(allWords.length+" woorden geëxporteerd","success");
+  }
+
+  function parseCSV(text){
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    const words=[];
+    for(let i=0;i<lines.length;i++){
+      const line=lines[i].trim();
+      if(!line)continue;
+      // skip header
+      const lower=line.toLowerCase();
+      if(i===0&&(lower.startsWith("nederlands")||lower.startsWith("nl;"))){continue}
+      // parse with ; separator, handle quotes
+      let parts=[];let current="";let inQ=false;
+      for(let c=0;c<line.length;c++){
+        const ch=line[c];
+        if(ch==='"'){
+          if(inQ&&line[c+1]==='"'){current+='"';c++}
+          else{inQ=!inQ}
+        }else if(ch===";"&&!inQ){parts.push(current);current=""}
+        else{current+=ch}
+      }
+      parts.push(current);
+      if(parts.length>=2){
+        const nl=parts[0].trim();const en=parts[1].trim();
+        if(nl&&en)words.push({nl,en});
+      }
+    }
+    return words;
+  }
+
+  function updateCsvStatus(){
+    const dot=document.getElementById("csvDot");
+    const info=document.getElementById("csvInfo");
+    if(allWords.length===0){
+      dot.className="csv-dot empty";
+      info.innerHTML="Geen woorden opgeslagen.";
+    }else{
+      dot.className="csv-dot synced";
+      info.innerHTML="<strong>"+allWords.length+" woorden</strong> klaar voor export.";
+    }
+  }
+
+  document.getElementById("csvExportBtn").onclick=downloadCSV;
+
+  const csvFileInput=document.getElementById("csvFileInput");
+  document.getElementById("csvImportBtn").onclick=()=>csvFileInput.click();
+
+  csvFileInput.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const text=ev.target.result;
+      const parsed=parseCSV(text);
+      if(parsed.length===0){
+        showToast("Geen geldige woorden gevonden in CSV","error");
+        csvFileInput.value="";return;
+      }
+      confirmDialog(
+        "Importeer "+parsed.length+" woorden? Dit vervangt alle "+allWords.length+" bestaande woorden en statistieken.",
+        "Importeren",
+        async()=>{
+          await clearAllWords();
+          await bulkAddWords(parsed);
+          allWords=await getAllWords();
+          renderCards(document.getElementById("searchInput").value);
+          updateCsvStatus();
+          showToast(parsed.length+" woorden geïmporteerd!","success");
+        }
+      );
+      csvFileInput.value="";
+    };
+    reader.readAsText(file,"UTF-8");
+  };
+
+  /* ===== WORD LIST ===== */
+  let allWords=[];
+  const nlInput=document.getElementById("nlWord");
+  const enInput=document.getElementById("enWord");
+  const cardsList=document.getElementById("cardsList");
+  const emptyState=document.getElementById("emptyState");
+  const wordCountEl=document.getElementById("wordCount");
+  const searchInput=document.getElementById("searchInput");
+
+  function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+  function escA(s){return s.replace(/"/g,"&quot;").replace(/'/g,"&#39;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+  function updateMenuCount(){document.getElementById("menuTotalWords").textContent=allWords.length+" woorden opgeslagen"}
+
+  function renderCards(filter){
+    const q=(filter||"").toLowerCase().trim();
+    let list=q?allWords.filter(w=>w.nl.toLowerCase().includes(q)||w.en.toLowerCase().includes(q)):allWords;
+    cardsList.innerHTML="";
+    emptyState.style.display=allWords.length===0?"block":"none";
+    wordCountEl.textContent=allWords.length+(allWords.length===1?" woord":" woorden");
+    updateMenuCount();
+    list.sort((a,b)=>b.date-a.date);
+    list.forEach(w=>{
+      const c=document.createElement("div");c.className="card";c.dataset.id=w.id;
+      c.innerHTML=`<div class="card-inner">
+        <div class="card-face card-front"><div class="card-word-area">
+          <div class="card-lang">Nederlands</div><div class="card-word">${esc(w.nl)}</div>
+          <div class="card-hint">Tik om te draaien</div></div>
+          <div class="card-actions">
+            <button class="card-btn speak-btn" data-speak="${escA(w.nl)}">🔊</button>
+            <button class="card-btn edit-btn" data-edit="${w.id}">✏️</button>
+            <button class="card-btn del-btn" data-del="${w.id}">✕</button></div></div>
+        <div class="card-face card-back"><div class="card-word-area">
+          <div class="card-lang">Engels</div><div class="card-word">${esc(w.en)}</div>
+          <div class="card-hint">Tik om terug te draaien</div></div>
+          <div class="card-actions">
+            <button class="card-btn speak-btn" data-speak="${escA(w.nl)}">🔊</button>
+            <button class="card-btn edit-btn" data-edit="${w.id}">✏️</button>
+            <button class="card-btn del-btn" data-del="${w.id}">✕</button></div></div>
+      </div>
+      <div class="edit-panel" id="edit-${w.id}">
+        <div class="edit-fields">
+          <input type="text" value="${escA(w.nl)}" placeholder="Nederlands" class="edit-nl">
+          <input type="text" value="${escA(w.en)}" placeholder="Engels" class="edit-en">
+        </div><button class="edit-save" data-save="${w.id}">💾 Opslaan</button>
+      </div>`;
+      cardsList.appendChild(c);
+    });
+  }
+
+  cardsList.addEventListener("click",e=>{
+    const btn=e.target.closest("button");
+    if(btn&&btn.dataset.speak){e.stopPropagation();speak(btn.dataset.speak);return}
+    if(btn&&btn.dataset.del){
+      e.stopPropagation();const id=Number(btn.dataset.del);
+      confirmDialog("Weet je zeker dat je dit woord wilt verwijderen?","Verwijderen",async()=>{
+        await deleteWord(id);allWords=allWords.filter(w=>w.id!==id);
+        renderCards(searchInput.value);showToast("Woord verwijderd","success");
+      });return;
+    }
+    if(btn&&btn.dataset.edit){
+      e.stopPropagation();const id=Number(btn.dataset.edit);
+      const p=document.getElementById("edit-"+id);if(!p)return;
+      const o=p.classList.contains("open");
+      document.querySelectorAll(".edit-panel.open").forEach(x=>x.classList.remove("open"));
+      if(!o)p.classList.add("open");return;
+    }
+    if(btn&&btn.dataset.save){
+      e.stopPropagation();const id=Number(btn.dataset.save);
+      const p=document.getElementById("edit-"+id);
+      const nv=p.querySelector(".edit-nl").value.trim();
+      const ev=p.querySelector(".edit-en").value.trim();
+      if(!nv||!ev){showToast("Vul beide velden in","error");return}
+      updateWord(id,nv,ev).then(()=>{
+        const w=allWords.find(x=>x.id===id);if(w){w.nl=nv;w.en=ev}
+        renderCards(searchInput.value);showToast("Woord bijgewerkt","success");
+      });return;
+    }
+    const card=e.target.closest(".card");if(card)card.classList.toggle("flipped");
+  });
+
+  document.getElementById("btnListen").onclick=()=>{
+    const w=nlInput.value.trim();if(!w){showToast("Typ eerst een woord","error");return}speak(w);
+  };
+  document.getElementById("btnSave").onclick=async()=>{
+    const nl=nlInput.value.trim(),en=enInput.value.trim();
+    if(!nl||!en){showToast("Vul beide velden in","error");return}
+    await addWord(nl,en);allWords=await getAllWords();
+    renderCards(searchInput.value);nlInput.value="";enInput.value="";
+    nlInput.focus();showToast("Woord opgeslagen!","success");
+  };
+  enInput.onkeydown=e=>{if(e.key==="Enter")document.getElementById("btnSave").click()};
+  nlInput.onkeydown=e=>{if(e.key==="Enter")enInput.focus()};
+  searchInput.oninput=()=>renderCards(searchInput.value);
+
+  /* ===== QUIZ ===== */
+  let quizWords=[],quizIndex=0,quizCorrect=0,quizWrong=0,quizAnswered=false;
+  function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+  function resetQuizView(){
+    document.getElementById("quizStart").style.display="block";
+    document.getElementById("quizActive").style.display="none";
+    document.getElementById("quizEnd").style.display="none";
+    document.getElementById("quizMinWords").style.display=allWords.length===0?"block":"none";
+  }
+  document.getElementById("quizStartBtn").onclick=()=>{
+    if(allWords.length===0){document.getElementById("quizMinWords").style.display="block";return}
+    quizWords=shuffle(allWords);quizIndex=0;quizCorrect=0;quizWrong=0;
+    document.getElementById("quizStart").style.display="none";
+    document.getElementById("quizEnd").style.display="none";
+    document.getElementById("quizActive").style.display="block";
+    showQuizWord();
+  };
+  function showQuizWord(){
+    quizAnswered=false;
+    document.getElementById("quizProgress").textContent="Woord "+(quizIndex+1)+" / "+quizWords.length;
+    document.getElementById("quizCorrectCount").textContent="✓ "+quizCorrect;
+    document.getElementById("quizWrongCount").textContent="✗ "+quizWrong;
+    document.getElementById("quizNlInput").value="";
+    document.getElementById("quizEnInput").value="";
+    document.getElementById("quizNlInput").disabled=false;
+    document.getElementById("quizEnInput").disabled=false;
+    document.getElementById("quizFeedback").className="quiz-feedback";
+    document.getElementById("quizFeedback").style.display="none";
+    document.getElementById("quizNextBtn").style.display="none";
+    document.getElementById("quizCheckBtn").style.display="block";
+    setTimeout(()=>speak(quizWords[quizIndex].nl),350);
+  }
+  const spkBtn=document.getElementById("quizSpeakBtn");
+  spkBtn.onclick=()=>{
+    if(!quizWords.length)return;speak(quizWords[quizIndex].nl);
+    spkBtn.classList.add("playing");setTimeout(()=>spkBtn.classList.remove("playing"),600);
+  };
+  function norm(s){return s.trim().toLowerCase().replace(/\s+/g," ")}
+
+  document.getElementById("quizCheckBtn").onclick=async()=>{
+    if(quizAnswered)return;
+    const na=norm(document.getElementById("quizNlInput").value);
+    const ea=norm(document.getElementById("quizEnInput").value);
+    if(!na&&!ea){showToast("Schrijf je antwoord","error");return}
+    quizAnswered=true;const w=quizWords[quizIndex];
+    const nOk=na===norm(w.nl),eOk=ea===norm(w.en),ok=nOk&&eOk;
+    const fb=document.getElementById("quizFeedback");
+    if(ok){
+      quizCorrect++;fb.className="quiz-feedback show is-correct";
+      document.getElementById("fbIcon").textContent="🎉";
+      document.getElementById("fbText").innerHTML="<strong>Uitstekend!</strong> Beide antwoorden zijn goed!";
+      document.getElementById("fbAnswer").style.display="none";
+      await saveStats(w.id,1,0);
+    }else{
+      quizWrong++;fb.className="quiz-feedback show is-wrong";
+      document.getElementById("fbIcon").textContent="😕";
+      let p=[];if(!nOk)p.push("🇳🇱 "+w.nl);if(!eOk)p.push("🇬🇧 "+w.en);
+      document.getElementById("fbText").innerHTML="<strong>Helaas!</strong> Het juiste antwoord:";
+      document.getElementById("fbAnswer").textContent=p.join("  ·  ");
+      document.getElementById("fbAnswer").style.display="block";
+      await saveStats(w.id,0,1);
+    }
+    document.getElementById("quizCorrectCount").textContent="✓ "+quizCorrect;
+    document.getElementById("quizWrongCount").textContent="✗ "+quizWrong;
+    document.getElementById("quizCheckBtn").style.display="none";
+    document.getElementById("quizNextBtn").style.display="block";
+    document.getElementById("quizNlInput").disabled=true;
+    document.getElementById("quizEnInput").disabled=true;
+  };
+  document.getElementById("quizNlInput").onkeydown=e=>{if(e.key==="Enter")document.getElementById("quizEnInput").focus()};
+  document.getElementById("quizEnInput").onkeydown=e=>{if(e.key==="Enter")document.getElementById("quizCheckBtn").click()};
+  document.getElementById("quizNextBtn").onclick=()=>{
+    quizIndex++;if(quizIndex>=quizWords.length)showQuizEnd();else showQuizWord();
+  };
+  function showQuizEnd(){
+    document.getElementById("quizActive").style.display="none";
+    document.getElementById("quizEnd").style.display="block";
+    const t=quizWords.length,pct=t>0?Math.round((quizCorrect/t)*100):0;
+    document.getElementById("endScore").textContent=pct+"%";
+    document.getElementById("endDetail").textContent=quizCorrect+" goed · "+quizWrong+" fout · "+t+" woorden totaal";
+    document.getElementById("endIcon").textContent=pct>=80?"🏆":pct>=50?"💪":"📚";
+  }
+  document.getElementById("quizRestartBtn").onclick=()=>{
+    if(!allWords.length){resetQuizView();return}
+    quizWords=shuffle(allWords);quizIndex=0;quizCorrect=0;quizWrong=0;
+    document.getElementById("quizEnd").style.display="none";
+    document.getElementById("quizActive").style.display="block";showQuizWord();
+  };
+
+  /* ===== STATS ===== */
+  async function renderStats(){
+    const stats=await getAllStats();const sm={};stats.forEach(s=>sm[s.wordId]=s);
+    document.getElementById("statTotal").textContent=allWords.length;
+    const pr=allWords.filter(w=>sm[w.id]).length;
+    document.getElementById("statPracticed").textContent=pr;
+    let tp=0,pc=0;
+    allWords.forEach(w=>{const s=sm[w.id];if(s){const t=s.correct+s.wrong;if(t>0){tp+=(s.correct/t)*100;pc++}}});
+    document.getElementById("statAvg").textContent=pc>0?Math.round(tp/pc)+"%":"–";
+    const list=document.getElementById("statsList");list.innerHTML="";
+    const empty=document.getElementById("statsEmpty");
+    const rb=document.getElementById("statsResetBtn");
+    if(!allWords.length){empty.style.display="block";rb.style.display="none";return}
+    empty.style.display="none";rb.style.display=stats.length>0?"block":"none";
+    const sorted=[...allWords].sort((a,b)=>{
+      const sa=sm[a.id],sb=sm[b.id];
+      const pa=sa?(sa.correct/(sa.correct+sa.wrong))*100:-1;
+      const pb=sb?(sb.correct/(sb.correct+sb.wrong))*100:-1;
+      return pa-pb;
+    });
+    sorted.forEach(w=>{
+      const s=sm[w.id];let pct=-1,tot=0,cls="none",pt="–";
+      if(s){tot=s.correct+s.wrong;if(tot>0){pct=Math.round((s.correct/tot)*100);pt=pct+"%";cls=pct>=70?"high":pct>=40?"mid":"low"}}
+      const r=document.createElement("div");r.className="stat-word-row";
+      r.innerHTML=`<div class="stat-word-top"><span class="stat-word-name">${esc(w.nl)}</span><span class="stat-word-pct ${cls}">${pt}</span></div>
+        <div class="stat-word-en">${esc(w.en)}</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill ${cls}" style="width:${pct>=0?pct:0}%"></div></div>
+        <div class="stat-word-detail"><span>✓ ${s?s.correct:0} goed</span><span>✗ ${s?s.wrong:0} fout</span><span>${tot} pogingen</span></div>`;
+      list.appendChild(r);
+    });
+  }
+  document.getElementById("statsResetBtn").onclick=()=>{
+    confirmDialog("Alle statistieken wissen? Woorden blijven bewaard.","Wissen",async()=>{
+      await clearAllStats();renderStats();showToast("Statistieken gewist","success");
+    });
+  };
+
+  /* ===== INIT ===== */
+  openDB().then(async()=>{
+    allWords=await getAllWords();renderCards();updateCsvStatus();
+  }).catch(err=>{console.error("DB:",err);showToast("Database fout","error")});
+
+})();
+</script>
+</body>
+</html>
