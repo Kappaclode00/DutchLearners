@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1a1a2e">
+<meta name="theme-color" content="#21468B">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <title>Woordenschat</title>
@@ -51,7 +51,7 @@ body::before{
 .hamburger{
   width:44px;height:44px;background:none;border:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:5px;padding:0;z-index:1001;-webkit-user-select:none;user-select:none;
+  gap:5px;padding:0;z-index:1001;-webkit-user-select:none;user-select:none;flex-shrink:0;
 }
 .hamburger span{
   display:block;width:22px;height:2.5px;background:var(--accent);
@@ -60,13 +60,29 @@ body::before{
 .hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
-.top-title{flex:1;text-align:center;margin-right:44px}
+.top-title{flex:1;text-align:center}
 .top-title h1{
   font-size:1.4rem;font-weight:800;letter-spacing:-.5px;
   background:linear-gradient(135deg,var(--nl-blue),var(--nl-red));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .top-title p{font-size:.7rem;color:var(--text-dim);margin-top:2px;letter-spacing:.5px}
+.settings-btn{
+  width:44px;height:44px;background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;position:relative;flex-shrink:0;
+  -webkit-user-select:none;user-select:none;
+}
+.sync-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--text-dim);display:inline-block;
+  transition:background .3s;
+}
+.sync-dot.synced{background:var(--success)}
+.sync-dot.syncing{background:#f59e0b;animation:syncPulse .8s ease-in-out infinite}
+.sync-dot.error{background:var(--danger)}
+@keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.settings-btn .sync-dot{position:absolute;top:9px;right:9px;pointer-events:none}
 
 /* SIDE MENU */
 .menu-overlay{
@@ -196,10 +212,7 @@ body::before{
   border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;
   border:1px solid rgba(33,70,139,.1);box-shadow:0 2px 12px rgba(33,70,139,.08);
 }
-.card-front{
-  position:relative;background:var(--surface);
-  border-left:4px solid var(--nl-red);
-}
+.card-front{position:relative;background:var(--surface);border-left:4px solid var(--nl-red)}
 .card-back{
   position:absolute;top:0;left:0;width:100%;height:100%;
   background:linear-gradient(135deg,#e8eef8,#dde6f5);transform:rotateY(180deg);
@@ -209,10 +222,7 @@ body::before{
 .card-word{font-size:1.15rem;font-weight:700;line-height:1.3;word-break:break-word}
 .card-front .card-word{color:var(--text)}
 .card-back .card-word{color:var(--nl-blue)}
-.card-lang{
-  font-size:.65rem;text-transform:uppercase;letter-spacing:1px;
-  color:var(--text-dim);margin-bottom:3px;font-weight:600;
-}
+.card-lang{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:3px;font-weight:600}
 .card-hint{font-size:.7rem;color:var(--text-dim);margin-top:5px;font-style:italic;opacity:.7}
 .card-actions{display:flex;flex-direction:column;gap:5px;margin-left:10px;flex-shrink:0}
 .card-btn{
@@ -247,12 +257,11 @@ body::before{
 .edit-save{
   margin-top:12px;width:100%;padding:12px;background:var(--accent);
   color:#fff;border:none;border-radius:var(--radius-sm);
-  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);
-  transition:transform .1s;
+  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .1s;
 }
 .edit-save:active{transform:scale(.97)}
 
-/* SEARCH */
+/* WORD LIST SEARCH BAR */
 .search-bar{margin-bottom:14px}
 .search-bar input{
   width:100%;padding:12px 16px 12px 42px;background:var(--surface);
@@ -281,8 +290,7 @@ body::before{
 .dialog-btns{display:flex;gap:10px}
 .dialog-btns button{
   flex:1;padding:12px;border:none;border-radius:var(--radius-sm);
-  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);
-  transition:transform .1s;
+  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .1s;
 }
 .dialog-btns button:active{transform:scale(.96)}
 .dialog-cancel{background:var(--surface2);color:var(--text)}
@@ -309,9 +317,139 @@ body::before{
   border-radius:var(--radius-sm);font-size:.8rem;font-weight:700;
   cursor:pointer;font-family:var(--font);white-space:nowrap;
 }
-.install-banner .dismiss{
-  background:none;color:var(--text-dim);padding:4px 8px;font-size:1.1rem;
+.install-banner .dismiss{background:none;color:var(--text-dim);padding:4px 8px;font-size:1.1rem}
+
+/* ===== SETTINGS MODAL ===== */
+.settings-overlay{
+  position:fixed;inset:0;background:rgba(33,70,139,.35);z-index:9500;
+  display:none;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
 }
+.settings-overlay.open{display:flex}
+.settings-modal{
+  background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;
+  width:100%;max-width:460px;padding:24px 24px 32px;
+  box-shadow:0 -8px 32px rgba(33,70,139,.15);max-height:90vh;overflow-y:auto;
+}
+.settings-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.settings-header h2{font-size:1rem;font-weight:800;color:var(--text)}
+.settings-close{background:none;border:none;font-size:1.3rem;color:var(--text-dim);cursor:pointer;padding:4px 8px;line-height:1}
+.settings-section-label{
+  font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);font-weight:700;margin-bottom:8px;
+}
+.settings-desc{font-size:.8rem;color:var(--text-dim);line-height:1.5;margin-bottom:12px}
+.settings-desc a{color:var(--accent);text-decoration:none}
+.token-wrap{position:relative}
+.token-wrap input{padding-right:48px}
+.token-eye{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:1rem;
+  color:var(--text-dim);padding:4px;
+}
+.sync-status-row{display:flex;align-items:center;gap:8px;margin:10px 0 20px;font-size:.8rem;color:var(--text-dim)}
+.sync-status-row .sync-dot{width:10px;height:10px;flex-shrink:0}
+.settings-actions{display:flex;flex-direction:column;gap:8px}
+.set-btn{
+  width:100%;padding:13px;border:none;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .1s;
+}
+.set-btn:active{transform:scale(.97)}
+.set-btn-primary{background:var(--accent);color:#fff}
+.set-btn-success{background:var(--success-bg);color:var(--success);border:1.5px solid rgba(26,138,74,.2)}
+.set-btn-danger{background:var(--danger-bg);color:var(--danger);border:1.5px solid rgba(174,28,40,.2)}
+
+/* ===== SEARCH DICTIONARY PAGE ===== */
+.dir-toggle{display:flex;gap:8px;margin-bottom:14px}
+.dir-btn{
+  flex:1;padding:10px 8px;border:1.5px solid rgba(33,70,139,.15);
+  border-radius:var(--radius-sm);background:var(--surface2);
+  color:var(--text-dim);font-size:.85rem;font-weight:700;
+  cursor:pointer;font-family:var(--font);transition:all .15s;
+}
+.dir-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dict-search-row{display:flex;gap:8px}
+.dict-search-row input{
+  flex:1;padding:14px 16px;background:var(--surface2);
+  border:1.5px solid rgba(33,70,139,.12);border-radius:var(--radius-sm);
+  color:var(--text);font-size:1rem;font-family:var(--font);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.dict-search-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.dict-search-row input::placeholder{color:rgba(107,114,128,.5)}
+.dict-go-btn{
+  padding:0 18px;background:linear-gradient(135deg,var(--nl-blue),#1a3570);
+  color:#fff;border:none;border-radius:var(--radius-sm);
+  font-size:1.1rem;cursor:pointer;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(33,70,139,.3);transition:transform .12s;
+}
+.dict-go-btn:active{transform:scale(.94)}
+.search-loading{text-align:center;padding:28px;color:var(--text-dim);font-size:.9rem;display:none}
+.search-loading.show{display:block}
+.search-result-area{margin-top:4px;display:none}
+.search-result-area.show{display:block}
+.search-result-card{
+  background:var(--surface);border-radius:var(--radius);
+  border:1px solid rgba(33,70,139,.08);box-shadow:var(--shadow);overflow:hidden;
+}
+.search-result-nl{padding:16px 18px;border-left:4px solid var(--nl-red);background:var(--surface)}
+.search-result-en{
+  padding:16px 18px;border-left:4px solid var(--nl-blue);
+  background:linear-gradient(135deg,#e8eef8,#dde6f5);
+}
+.search-result-lang{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;margin-bottom:4px}
+.search-result-word{font-size:1.2rem;font-weight:700;color:var(--text)}
+.search-result-en .search-result-word{color:var(--nl-blue)}
+.search-add-btn{
+  width:100%;padding:14px;margin-top:12px;border:none;
+  border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--nl-blue),#1a3570);color:#fff;
+  font-size:.95rem;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:transform .12s;box-shadow:0 4px 16px rgba(33,70,139,.3);
+}
+.search-add-btn:active{transform:scale(.96)}
+.search-add-btn.added{
+  background:var(--success-bg);color:var(--success);
+  border:1.5px solid rgba(26,138,74,.2);box-shadow:none;cursor:default;
+  transform:none !important;
+}
+
+/* ===== PRESETS PAGE ===== */
+.preset-category{margin-top:20px}
+.preset-cat-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4px;margin-bottom:10px;
+}
+.preset-cat-title{font-size:.85rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:700}
+.preset-add-all{
+  padding:6px 14px;border:1.5px solid rgba(33,70,139,.2);
+  border-radius:20px;background:var(--surface);
+  color:var(--accent);font-size:.75rem;font-weight:700;
+  cursor:pointer;font-family:var(--font);transition:background .15s;
+}
+.preset-add-all:active{background:var(--accent-glow)}
+.preset-list{display:flex;flex-direction:column;gap:8px}
+.preset-row{
+  background:var(--surface);border-radius:var(--radius-sm);
+  padding:12px 14px;border:1px solid rgba(33,70,139,.08);
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 8px rgba(33,70,139,.05);transition:opacity .2s;
+}
+.preset-row.added{opacity:.5}
+.preset-row-words{flex:1;min-width:0}
+.preset-nl{font-size:.95rem;font-weight:700;color:var(--text)}
+.preset-en{font-size:.75rem;color:var(--text-dim);margin-top:2px}
+.preset-add-btn{
+  width:36px;height:36px;border:none;border-radius:var(--radius-sm);
+  background:rgba(33,70,139,.08);color:var(--accent);
+  font-size:1.1rem;font-weight:700;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .1s;-webkit-user-select:none;user-select:none;
+}
+.preset-add-btn:active{transform:scale(.9)}
+.preset-add-btn.added{background:var(--success-bg);color:var(--success);cursor:default}
+.presets-empty{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:.9rem;line-height:1.6}
+.presets-empty .empty-icon{font-size:2.5rem;display:block;margin-bottom:12px;opacity:.5}
 
 /* ===== QUIZ ===== */
 .quiz-status{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -345,10 +483,7 @@ body::before{
   border:1.5px solid rgba(33,70,139,.12);transition:transform .12s;
 }
 .quiz-next-btn:active{transform:scale(.96)}
-.quiz-feedback{
-  border-radius:var(--radius-sm);padding:16px;margin-top:14px;
-  display:none;animation:slideDown .25s ease;
-}
+.quiz-feedback{border-radius:var(--radius-sm);padding:16px;margin-top:14px;display:none;animation:slideDown .25s ease}
 .quiz-feedback.show{display:block}
 .quiz-feedback.is-correct{background:var(--success-bg);border:1px solid rgba(26,138,74,.25)}
 .quiz-feedback.is-wrong{background:var(--danger-bg);border:1px solid rgba(174,28,40,.25)}
@@ -385,21 +520,12 @@ body::before{
   box-shadow:0 2px 8px rgba(33,70,139,.06);
 }
 .stat-box .stat-val{font-size:1.4rem;font-weight:800;color:var(--accent)}
-.stat-box .stat-label{
-  font-size:.65rem;text-transform:uppercase;letter-spacing:1px;
-  color:var(--text-dim);margin-top:4px;font-weight:600;
-}
+.stat-box .stat-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-top:4px;font-weight:600}
 .stats-list{display:flex;flex-direction:column;gap:8px}
-.stat-word-row{
-  background:var(--surface);border-radius:var(--radius-sm);
-  padding:14px 16px;border:1px solid rgba(33,70,139,.08);
-}
+.stat-word-row{background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid rgba(33,70,139,.08)}
 .stat-word-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .stat-word-name{font-size:.95rem;font-weight:700}
-.stat-word-pct{
-  font-size:.85rem;font-weight:800;padding:3px 10px;
-  border-radius:20px;min-width:52px;text-align:center;
-}
+.stat-word-pct{font-size:.85rem;font-weight:800;padding:3px 10px;border-radius:20px;min-width:52px;text-align:center}
 .stat-word-pct.high{background:var(--success-bg);color:var(--success)}
 .stat-word-pct.mid{background:rgba(33,70,139,.1);color:var(--accent)}
 .stat-word-pct.low{background:var(--danger-bg);color:var(--danger)}
@@ -411,60 +537,15 @@ body::before{
 .stat-bar-fill.mid{background:var(--nl-blue)}
 .stat-bar-fill.low{background:var(--danger)}
 .stat-word-detail{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text-dim)}
-.stats-empty{
-  text-align:center;padding:48px 20px;
-  color:var(--text-dim);font-size:.9rem;line-height:1.6;
-}
+.stats-empty{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:.9rem;line-height:1.6}
 .stats-empty .empty-icon{font-size:2.5rem;display:block;margin-bottom:12px;opacity:.5}
 .stats-reset{
   margin-top:24px;width:100%;padding:13px;
   background:var(--danger-bg);color:var(--danger);
   border:1.5px solid rgba(174,28,40,.2);border-radius:var(--radius-sm);
-  font-size:.85rem;font-weight:700;cursor:pointer;font-family:var(--font);
-  transition:transform .1s;
+  font-size:.85rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .1s;
 }
 .stats-reset:active{transform:scale(.97)}
-
-/* ===== CSV / IMPORT-EXPORT ===== */
-.csv-status{
-  background:var(--surface);border-radius:var(--radius-sm);
-  padding:14px 16px;margin-top:16px;
-  border:1px solid rgba(33,70,139,.08);
-  display:flex;align-items:center;gap:12px;
-}
-.csv-dot{
-  width:10px;height:10px;border-radius:50%;flex-shrink:0;
-}
-.csv-dot.synced{background:var(--success);box-shadow:0 0 6px var(--success)}
-.csv-dot.empty{background:var(--text-dim)}
-.csv-info{flex:1;font-size:.8rem;color:var(--text-dim);line-height:1.4}
-.csv-info strong{color:var(--text);font-weight:700}
-.ie-buttons{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-.ie-btn{
-  width:100%;padding:15px;border:none;border-radius:var(--radius-sm);
-  font-size:.95rem;font-weight:700;cursor:pointer;font-family:var(--font);
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:transform .12s;
-}
-.ie-btn:active{transform:scale(.96)}
-.ie-btn-export{
-  background:var(--success-bg);color:var(--success);
-  border:1.5px solid rgba(26,138,74,.2);
-}
-.ie-btn-import{
-  background:var(--info-bg);color:var(--info);
-  border:1.5px solid rgba(37,99,235,.2);
-}
-.ie-btn-import-replace{
-  background:var(--danger-bg);color:var(--danger);
-  border:1.5px solid rgba(174,28,40,.2);
-  font-size:.85rem;
-}
-.import-info{
-  font-size:.75rem;color:var(--text-dim);line-height:1.5;
-  margin-top:8px;padding:0 4px;
-}
-#csvFileInput{display:none}
 </style>
 </head>
 <body>
@@ -474,9 +555,10 @@ body::before{
 <nav class="side-menu" id="sideMenu">
   <div class="menu-label">Navigatie</div>
   <button class="menu-item active" data-page="words"><span class="mi-icon">📖</span> Woordenlijst</button>
+  <button class="menu-item" data-page="search"><span class="mi-icon">🔍</span> Zoeken</button>
+  <button class="menu-item" data-page="presets"><span class="mi-icon">📚</span> Basiswoorden</button>
   <button class="menu-item" data-page="quiz"><span class="mi-icon">🎧</span> Luisteroefening</button>
   <button class="menu-item" data-page="stats"><span class="mi-icon">📊</span> Statistieken</button>
-  <button class="menu-item" data-page="csv"><span class="mi-icon">📁</span> Importeren / Exporteren</button>
   <div class="menu-divider"></div>
   <div class="menu-label">Info</div>
   <button class="menu-item" style="pointer-events:none;opacity:.7">
@@ -484,14 +566,45 @@ body::before{
   </button>
 </nav>
 
+<!-- SETTINGS MODAL -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-modal">
+    <div class="settings-header">
+      <h2>⚙️ Instellingen</h2>
+      <button class="settings-close" id="settingsClose">✕</button>
+    </div>
+    <div class="settings-section-label">GitHub Backup</div>
+    <p class="settings-desc">
+      Sla je woordenschat automatisch op in een privé GitHub Gist.
+      Maak een <a href="https://github.com/settings/tokens/new?scopes=gist&description=Woordenschat" target="_blank">Personal Access Token</a> aan met <strong>gist</strong> scope.
+    </p>
+    <div class="field" style="margin-bottom:0">
+      <label for="ghTokenInput">Personal Access Token</label>
+      <div class="token-wrap">
+        <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxx" autocomplete="off">
+        <button class="token-eye" id="tokenEye" type="button">👁</button>
+      </div>
+    </div>
+    <div class="sync-status-row">
+      <span class="sync-dot" id="syncDotModal"></span>
+      <span id="syncStatusText">Niet geconfigureerd</span>
+    </div>
+    <div class="settings-actions">
+      <button class="set-btn set-btn-primary" id="settingsSave">💾 Token opslaan</button>
+      <button class="set-btn set-btn-success" id="settingsSync">🔄 Synchroniseer nu</button>
+      <button class="set-btn set-btn-danger" id="settingsRestore">⬇️ Herstel van backup</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <div class="top-bar">
     <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
     <div class="top-title"><h1>Woordenschat 🇳🇱</h1><p>Leer Nederlands — offline</p></div>
+    <button class="settings-btn" id="settingsBtn" aria-label="Instellingen">⚙️<span class="sync-dot" id="syncDot"></span></button>
   </div>
 
   <div class="tts-warning" id="ttsWarning">⚠️ Geen Nederlandse stem gevonden. Installeer een Nederlands taalpakket in je telefooninstellingen.</div>
-
   <div class="install-banner" id="installBanner">
     <p>Installeer als app op je telefoon!</p>
     <button id="installBtn">Installeer</button>
@@ -503,7 +616,10 @@ body::before{
     <section class="section-card">
       <h2 class="section-title">Nieuw woord</h2>
       <div class="field"><label for="nlWord">Nederlands</label><input type="text" id="nlWord" placeholder="Typ een woord in het Nederlands" autocomplete="off" enterkeyhint="next"></div>
-      <div class="field"><label for="enWord">Engels</label><input type="text" id="enWord" placeholder="Engelse vertaling" autocomplete="off" enterkeyhint="done"></div>
+      <div class="field">
+        <label for="enWord">Engels <span style="font-weight:400;font-size:.7rem;color:var(--text-dim)">(meerdere: Hi / Hello)</span></label>
+        <input type="text" id="enWord" placeholder="Engelse vertaling" autocomplete="off" enterkeyhint="done">
+      </div>
       <div class="btn-row">
         <button class="btn btn-listen" id="btnListen">🔊 Luister</button>
         <button class="btn btn-save" id="btnSave">💾 Opslaan</button>
@@ -514,6 +630,45 @@ body::before{
       <div class="search-bar"><input type="text" id="searchInput" placeholder="Zoek een woord…" autocomplete="off"></div>
       <div id="cardsList" class="cards-container"></div>
       <div class="empty-state" id="emptyState"><span class="empty-icon">🌷</span>Nog geen woorden opgeslagen.<br>Voeg je eerste woord hierboven toe!</div>
+    </section>
+  </div>
+
+  <!-- ===== PAGE: SEARCH ===== -->
+  <div class="page" id="page-search">
+    <section class="section-card">
+      <h2 class="section-title">🔍 Woordenboek</h2>
+      <div class="dir-toggle">
+        <button class="dir-btn active" id="dirBtnNl">🇳🇱 NL → EN</button>
+        <button class="dir-btn" id="dirBtnEn">🇬🇧 EN → NL</button>
+      </div>
+      <div class="dict-search-row">
+        <input type="text" id="dictInput" placeholder="Typ een Nederlands woord…" autocomplete="off" enterkeyhint="search">
+        <button class="dict-go-btn" id="dictGoBtn">🔍</button>
+      </div>
+      <div class="search-loading" id="searchLoading">🔄 Vertaling ophalen…</div>
+    </section>
+    <div class="search-result-area" id="searchResultArea">
+      <div class="search-result-card">
+        <div class="search-result-nl">
+          <div class="search-result-lang">🇳🇱 Nederlands</div>
+          <div class="search-result-word" id="searchResultNl">—</div>
+        </div>
+        <div class="search-result-en">
+          <div class="search-result-lang">🇬🇧 Engels</div>
+          <div class="search-result-word" id="searchResultEn">—</div>
+        </div>
+      </div>
+      <button class="search-add-btn" id="searchAddBtn">+ Voeg toe aan woordenlijst</button>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: PRESETS ===== -->
+  <div class="page" id="page-presets">
+    <section style="margin-top:16px">
+      <h2 class="section-title" style="padding:0 4px;margin-bottom:4px">📚 Basiswoorden</h2>
+      <p style="font-size:.8rem;color:var(--text-dim);padding:0 4px;margin-bottom:4px;line-height:1.5">Voeg basiswoorden toe aan je woordenlijst. Woorden die je al hebt zijn gemarkeerd met ✓.</p>
+      <div id="presetsContainer"></div>
+      <div class="presets-empty" id="presetsEmpty" style="display:none"><span class="empty-icon">📚</span>Geen basiswoorden beschikbaar.</div>
     </section>
   </div>
 
@@ -563,29 +718,6 @@ body::before{
       <button class="stats-reset" id="statsResetBtn">🗑 Statistieken resetten</button>
     </section>
   </div>
-
-  <!-- ===== PAGE: CSV ===== -->
-  <div class="page" id="page-csv">
-    <section style="margin-top:16px">
-      <h2 class="section-title" style="padding:0 4px;margin-bottom:4px">📁 Importeren / Exporteren</h2>
-
-      <div class="csv-status" id="csvStatus">
-        <div class="csv-dot empty" id="csvDot"></div>
-        <div class="csv-info" id="csvInfo">Geen woorden opgeslagen.</div>
-      </div>
-
-      <div class="ie-buttons">
-        <button class="ie-btn ie-btn-export" id="csvExportBtn">📤 CSV exporteren</button>
-        <button class="ie-btn ie-btn-import" id="csvImportBtn">📥 CSV importeren</button>
-        <input type="file" id="csvFileInput" accept=".csv,text/csv">
-      </div>
-
-      <p class="import-info">
-        ⚠️ Importeren vervangt alle bestaande woorden.<br>
-        CSV formaat: <strong>Nederlands;Engels</strong> (één woord per regel, puntkomma als scheidingsteken).
-      </p>
-    </section>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -601,6 +733,9 @@ body::before{
 <script>
 (function(){
   "use strict";
+
+  /* ===== PRESET VOCABULARY — fill in next step ===== */
+  const PRESETS = [];
 
   /* ===== DB ===== */
   const DB="woordenschat",VER=2,ST_W="woorden",ST_S="stats";
@@ -742,7 +877,7 @@ body::before{
     toggleMenu(false);
     if(pid==="stats")renderStats();
     if(pid==="quiz")resetQuizView();
-    if(pid==="csv")updateCsvStatus();
+    if(pid==="presets")renderPresets();
     window.scrollTo(0,0);
   }
   menuItems.forEach(m=>{if(m.dataset.page)m.onclick=()=>navigateTo(m.dataset.page)});
@@ -768,101 +903,147 @@ body::before{
     navigator.serviceWorker.register("sw.js").catch(()=>{});
   }
 
-  /* ===== CSV ENGINE ===== */
-  function generateCSV(){
-    const header="Nederlands;Engels";
-    const rows=allWords.map(w=>{
-      const nl=w.nl.replace(/"/g,'""');const en=w.en.replace(/"/g,'""');
-      const wrapNl=nl.includes(";")||nl.includes('"')?'"'+nl+'"':nl;
-      const wrapEn=en.includes(";")||en.includes('"')?'"'+en+'"':en;
-      return wrapNl+";"+wrapEn;
+  /* ===== GITHUB GIST SYNC ===== */
+  function buildCSV(words){
+    const rows=words.map(w=>{
+      const nl=w.nl.replace(/;/g,",");const en=w.en.replace(/;/g,",");
+      return nl+";"+en;
     });
-    return header+"\n"+rows.join("\n");
+    return "Nederlands;Engels\n"+rows.join("\n");
   }
 
-  function downloadCSV(){
-    if(allWords.length===0){showToast("Geen woorden om te exporteren","error");return}
-    const csv=generateCSV();
-    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;a.download="woordenschat_"+new Date().toISOString().slice(0,10)+".csv";
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast(allWords.length+" woorden geëxporteerd","success");
+  function updateSyncDot(state){
+    ["syncDot","syncDotModal"].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      el.className="sync-dot";
+      if(state==="ok")el.classList.add("synced");
+      else if(state==="syncing")el.classList.add("syncing");
+      else if(state==="error")el.classList.add("error");
+    });
   }
 
-  function parseCSV(text){
+  async function syncToGist(){
+    const token=localStorage.getItem("gh_token");
+    if(!token)return;
+    updateSyncDot("syncing");
+    const csv=buildCSV(allWords);
+    const gistId=localStorage.getItem("gh_gist_id");
+    const headers={"Authorization":"token "+token,"Content-Type":"application/json"};
+    const fileObj={files:{"woordenschat.csv":{content:csv||" "}}};
+    try{
+      if(!gistId){
+        const r=await fetch("https://api.github.com/gists",{
+          method:"POST",headers,
+          body:JSON.stringify(Object.assign({description:"Woordenschat backup",public:false},fileObj))
+        });
+        if(!r.ok)throw new Error(r.status);
+        const data=await r.json();
+        localStorage.setItem("gh_gist_id",data.id);
+      }else{
+        const r=await fetch("https://api.github.com/gists/"+gistId,{
+          method:"PATCH",headers,body:JSON.stringify(fileObj)
+        });
+        if(!r.ok)throw new Error(r.status);
+      }
+      localStorage.setItem("gh_last_sync",Date.now());
+      updateSyncDot("ok");updateSyncStatus();
+    }catch(e){
+      updateSyncDot("error");updateSyncStatus();
+    }
+  }
+
+  function parseCSVtoWords(text){
     const lines=text.split(/\r?\n/).filter(l=>l.trim());
     const words=[];
     for(let i=0;i<lines.length;i++){
-      const line=lines[i].trim();
-      if(!line)continue;
-      // skip header
-      const lower=line.toLowerCase();
-      if(i===0&&(lower.startsWith("nederlands")||lower.startsWith("nl;"))){continue}
-      // parse with ; separator, handle quotes
-      let parts=[];let current="";let inQ=false;
-      for(let c=0;c<line.length;c++){
-        const ch=line[c];
-        if(ch==='"'){
-          if(inQ&&line[c+1]==='"'){current+='"';c++}
-          else{inQ=!inQ}
-        }else if(ch===";"&&!inQ){parts.push(current);current=""}
-        else{current+=ch}
-      }
-      parts.push(current);
-      if(parts.length>=2){
-        const nl=parts[0].trim();const en=parts[1].trim();
-        if(nl&&en)words.push({nl,en});
-      }
+      const line=lines[i].trim();if(!line)continue;
+      if(i===0&&line.toLowerCase().startsWith("nederlands"))continue;
+      const parts=line.split(";");
+      if(parts.length>=2){const nl=parts[0].trim();const en=parts[1].trim();if(nl&&en)words.push({nl,en});}
     }
     return words;
   }
 
-  function updateCsvStatus(){
-    const dot=document.getElementById("csvDot");
-    const info=document.getElementById("csvInfo");
-    if(allWords.length===0){
-      dot.className="csv-dot empty";
-      info.innerHTML="Geen woorden opgeslagen.";
+  async function restoreFromGist(){
+    const token=localStorage.getItem("gh_token");
+    const gistId=localStorage.getItem("gh_gist_id");
+    if(!token||!gistId){showToast("Geen backup geconfigureerd","error");return;}
+    try{
+      const r=await fetch("https://api.github.com/gists/"+gistId,{headers:{"Authorization":"token "+token}});
+      if(!r.ok)throw new Error();
+      const data=await r.json();
+      const csvContent=data.files&&data.files["woordenschat.csv"]&&data.files["woordenschat.csv"].content;
+      if(!csvContent){showToast("Geen data in backup gevonden","error");return;}
+      const words=parseCSVtoWords(csvContent);
+      if(words.length===0){showToast("Geen geldige woorden in backup","error");return;}
+      confirmDialog(
+        "Herstel "+words.length+" woorden uit backup? Dit vervangt alle huidige woorden.",
+        "Herstellen",
+        async()=>{
+          await clearAllWords();await bulkAddWords(words);
+          allWords=await getAllWords();
+          renderCards();updateSyncStatus();
+          showToast(words.length+" woorden hersteld!","success");
+        }
+      );
+    }catch(e){showToast("Fout bij ophalen backup","error");}
+  }
+
+  function updateSyncStatus(){
+    const lastSync=localStorage.getItem("gh_last_sync");
+    const token=localStorage.getItem("gh_token");
+    const statusEl=document.getElementById("syncStatusText");
+    const dotEl=document.getElementById("syncDotModal");
+    if(!statusEl)return;
+    if(!token){
+      statusEl.textContent="Niet geconfigureerd";
+      if(dotEl)dotEl.className="sync-dot";
+      return;
+    }
+    if(lastSync){
+      const d=new Date(Number(lastSync));
+      statusEl.textContent="Gesynchroniseerd om "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"});
+      if(dotEl)dotEl.className="sync-dot synced";
     }else{
-      dot.className="csv-dot synced";
-      info.innerHTML="<strong>"+allWords.length+" woorden</strong> klaar voor export.";
+      statusEl.textContent="Token opgeslagen, nog niet gesynchroniseerd";
+      if(dotEl)dotEl.className="sync-dot";
     }
   }
 
-  document.getElementById("csvExportBtn").onclick=downloadCSV;
-
-  const csvFileInput=document.getElementById("csvFileInput");
-  document.getElementById("csvImportBtn").onclick=()=>csvFileInput.click();
-
-  csvFileInput.onchange=e=>{
-    const file=e.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      const text=ev.target.result;
-      const parsed=parseCSV(text);
-      if(parsed.length===0){
-        showToast("Geen geldige woorden gevonden in CSV","error");
-        csvFileInput.value="";return;
-      }
-      confirmDialog(
-        "Importeer "+parsed.length+" woorden? Dit vervangt alle "+allWords.length+" bestaande woorden en statistieken.",
-        "Importeren",
-        async()=>{
-          await clearAllWords();
-          await bulkAddWords(parsed);
-          allWords=await getAllWords();
-          renderCards(document.getElementById("searchInput").value);
-          updateCsvStatus();
-          showToast(parsed.length+" woorden geïmporteerd!","success");
-        }
-      );
-      csvFileInput.value="";
-    };
-    reader.readAsText(file,"UTF-8");
+  /* ===== SETTINGS MODAL ===== */
+  const settingsOverlay=document.getElementById("settingsOverlay");
+  document.getElementById("settingsBtn").onclick=()=>{
+    const token=localStorage.getItem("gh_token")||"";
+    document.getElementById("ghTokenInput").value=token;
+    updateSyncStatus();
+    settingsOverlay.classList.add("open");
   };
+  document.getElementById("settingsClose").onclick=()=>settingsOverlay.classList.remove("open");
+  settingsOverlay.addEventListener("click",e=>{if(e.target===settingsOverlay)settingsOverlay.classList.remove("open");});
+  document.getElementById("tokenEye").onclick=()=>{
+    const inp=document.getElementById("ghTokenInput");
+    inp.type=inp.type==="password"?"text":"password";
+  };
+  document.getElementById("settingsSave").onclick=()=>{
+    const token=document.getElementById("ghTokenInput").value.trim();
+    if(token){
+      localStorage.setItem("gh_token",token);
+      updateSyncDot("idle");updateSyncStatus();
+      showToast("Token opgeslagen","success");
+    }else{
+      localStorage.removeItem("gh_token");localStorage.removeItem("gh_gist_id");localStorage.removeItem("gh_last_sync");
+      updateSyncDot("none");updateSyncStatus();
+      showToast("Token verwijderd","info");
+    }
+  };
+  document.getElementById("settingsSync").onclick=async()=>{
+    const token=localStorage.getItem("gh_token");
+    if(!token){showToast("Sla eerst een token op","error");return;}
+    await syncToGist();
+    updateSyncStatus();
+    if(localStorage.getItem("gh_gist_id"))showToast("Gesynchroniseerd!","success");
+  };
+  document.getElementById("settingsRestore").onclick=()=>restoreFromGist();
 
   /* ===== WORD LIST ===== */
   let allWords=[];
@@ -876,6 +1057,12 @@ body::before{
   function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
   function escA(s){return s.replace(/"/g,"&quot;").replace(/'/g,"&#39;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
   function updateMenuCount(){document.getElementById("menuTotalWords").textContent=allWords.length+" woorden opgeslagen"}
+  function norm(s){return s.trim().toLowerCase().replace(/\s+/g," ")}
+  function matchesAny(userInput,correctValue){
+    const u=norm(userInput);
+    return correctValue.split("/").map(s=>norm(s)).some(a=>u===a);
+  }
+  function isAlreadyAdded(nl){return allWords.some(w=>norm(w.nl)===norm(nl))}
 
   function renderCards(filter){
     const q=(filter||"").toLowerCase().trim();
@@ -906,7 +1093,7 @@ body::before{
       <div class="edit-panel" id="edit-${w.id}">
         <div class="edit-fields">
           <input type="text" value="${escA(w.nl)}" placeholder="Nederlands" class="edit-nl">
-          <input type="text" value="${escA(w.en)}" placeholder="Engels" class="edit-en">
+          <input type="text" value="${escA(w.en)}" placeholder="Engels (Hi / Hello)" class="edit-en">
         </div><button class="edit-save" data-save="${w.id}">💾 Opslaan</button>
       </div>`;
       cardsList.appendChild(c);
@@ -921,6 +1108,7 @@ body::before{
       confirmDialog("Weet je zeker dat je dit woord wilt verwijderen?","Verwijderen",async()=>{
         await deleteWord(id);allWords=allWords.filter(w=>w.id!==id);
         renderCards(searchInput.value);showToast("Woord verwijderd","success");
+        syncToGist();
       });return;
     }
     if(btn&&btn.dataset.edit){
@@ -939,6 +1127,7 @@ body::before{
       updateWord(id,nv,ev).then(()=>{
         const w=allWords.find(x=>x.id===id);if(w){w.nl=nv;w.en=ev}
         renderCards(searchInput.value);showToast("Woord bijgewerkt","success");
+        syncToGist();
       });return;
     }
     const card=e.target.closest(".card");if(card)card.classList.toggle("flipped");
@@ -953,10 +1142,149 @@ body::before{
     await addWord(nl,en);allWords=await getAllWords();
     renderCards(searchInput.value);nlInput.value="";enInput.value="";
     nlInput.focus();showToast("Woord opgeslagen!","success");
+    syncToGist();
   };
   enInput.onkeydown=e=>{if(e.key==="Enter")document.getElementById("btnSave").click()};
   nlInput.onkeydown=e=>{if(e.key==="Enter")enInput.focus()};
   searchInput.oninput=()=>renderCards(searchInput.value);
+
+  /* ===== SEARCH PAGE ===== */
+  let searchDirection="nl|en";
+  let searchResult=null;
+
+  const dirBtnNl=document.getElementById("dirBtnNl");
+  const dirBtnEn=document.getElementById("dirBtnEn");
+  const dictInput=document.getElementById("dictInput");
+  const dictGoBtn=document.getElementById("dictGoBtn");
+  const searchLoading=document.getElementById("searchLoading");
+  const searchResultArea=document.getElementById("searchResultArea");
+  const searchResultNlEl=document.getElementById("searchResultNl");
+  const searchResultEnEl=document.getElementById("searchResultEn");
+  const searchAddBtn=document.getElementById("searchAddBtn");
+
+  dirBtnNl.onclick=()=>{
+    searchDirection="nl|en";
+    dirBtnNl.classList.add("active");dirBtnEn.classList.remove("active");
+    dictInput.placeholder="Typ een Nederlands woord…";
+  };
+  dirBtnEn.onclick=()=>{
+    searchDirection="en|nl";
+    dirBtnEn.classList.add("active");dirBtnNl.classList.remove("active");
+    dictInput.placeholder="Type an English word…";
+  };
+
+  dictGoBtn.onclick=doSearch;
+  dictInput.onkeydown=e=>{if(e.key==="Enter")doSearch();};
+
+  async function doSearch(){
+    const q=dictInput.value.trim();
+    if(!q){showToast("Typ een woord om te zoeken","error");return;}
+    searchResultArea.classList.remove("show");
+    searchLoading.classList.add("show");
+    dictGoBtn.disabled=true;
+    try{
+      const ctrl=new AbortController();
+      const tid=setTimeout(()=>ctrl.abort(),8000);
+      const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(q)+"&langpair="+searchDirection;
+      const resp=await fetch(url,{signal:ctrl.signal});
+      clearTimeout(tid);
+      const data=await resp.json();
+      const translated=(data.responseData&&data.responseData.translatedText||"").trim();
+      if(!translated||data.responseStatus!==200||translated.toLowerCase().includes("mymemory warning")){
+        showToast("Geen vertaling gevonden","error");
+        searchLoading.classList.remove("show");dictGoBtn.disabled=false;return;
+      }
+      let nl,en;
+      if(searchDirection==="nl|en"){nl=q;en=translated;}
+      else{nl=translated;en=q;}
+      searchResult={nl,en};
+      searchResultNlEl.textContent=nl;
+      searchResultEnEl.textContent=en;
+      const already=isAlreadyAdded(nl);
+      searchAddBtn.textContent=already?"✓ Al toegevoegd":"+ Voeg toe aan woordenlijst";
+      searchAddBtn.className="search-add-btn"+(already?" added":"");
+      searchAddBtn.disabled=already;
+      searchLoading.classList.remove("show");
+      searchResultArea.classList.add("show");
+    }catch(e){
+      searchLoading.classList.remove("show");
+      showToast(e.name==="AbortError"?"Zoekopdracht verlopen":"Fout bij zoeken","error");
+    }
+    dictGoBtn.disabled=false;
+  }
+
+  searchAddBtn.onclick=async()=>{
+    if(!searchResult||searchAddBtn.disabled)return;
+    await addWord(searchResult.nl,searchResult.en);
+    allWords=await getAllWords();
+    renderCards(searchInput.value);
+    searchAddBtn.textContent="✓ Al toegevoegd";
+    searchAddBtn.className="search-add-btn added";
+    searchAddBtn.disabled=true;
+    showToast("Woord toegevoegd!","success");
+    syncToGist();
+  };
+
+  /* ===== PRESETS PAGE ===== */
+  function renderPresets(){
+    const container=document.getElementById("presetsContainer");
+    const empty=document.getElementById("presetsEmpty");
+    container.innerHTML="";
+    if(!PRESETS||PRESETS.length===0){empty.style.display="block";return;}
+    empty.style.display="none";
+    PRESETS.forEach((cat,ci)=>{
+      const catDiv=document.createElement("div");catDiv.className="preset-category";
+      const listId="preset-list-"+ci;
+      catDiv.innerHTML=`<div class="preset-cat-header">
+        <span class="preset-cat-title">${esc(cat.category)}</span>
+        <button class="preset-add-all" data-ci="${ci}">+ Aggiungi tutti</button>
+      </div><div class="preset-list" id="${listId}"></div>`;
+      container.appendChild(catDiv);
+      const listEl=document.getElementById(listId);
+      cat.words.forEach((w,wi)=>{
+        const added=isAlreadyAdded(w.nl);
+        const row=document.createElement("div");
+        row.className="preset-row"+(added?" added":"");
+        row.innerHTML=`<div class="preset-row-words">
+          <div class="preset-nl">${esc(w.nl)}</div>
+          <div class="preset-en">${esc(w.en)}</div>
+        </div>
+        <button class="preset-add-btn${added?" added":""}" data-ci="${ci}" data-wi="${wi}" ${added?"disabled":""}>
+          ${added?"✓":"+"}
+        </button>`;
+        listEl.appendChild(row);
+      });
+    });
+
+    container.querySelectorAll(".preset-add-all").forEach(btn=>{
+      btn.onclick=async()=>{
+        const cat=PRESETS[Number(btn.dataset.ci)];if(!cat)return;
+        const toAdd=cat.words.filter(w=>!isAlreadyAdded(w.nl));
+        if(toAdd.length===0){showToast("Tutti già aggiunti","info");return;}
+        for(const w of toAdd)await addWord(w.nl,w.en);
+        allWords=await getAllWords();
+        renderCards(searchInput.value);
+        renderPresets();
+        showToast(toAdd.length+" woorden toegevoegd!","success");
+        syncToGist();
+      };
+    });
+
+    container.querySelectorAll(".preset-add-btn:not(.added)").forEach(btn=>{
+      btn.onclick=async()=>{
+        const cat=PRESETS[Number(btn.dataset.ci)];
+        const w=cat&&cat.words[Number(btn.dataset.wi)];
+        if(!w)return;
+        await addWord(w.nl,w.en);
+        allWords=await getAllWords();
+        renderCards(searchInput.value);
+        btn.textContent="✓";btn.classList.add("added");btn.disabled=true;
+        btn.closest(".preset-row").classList.add("added");
+        showToast("Woord toegevoegd!","success");
+        syncToGist();
+      };
+    });
+  }
 
   /* ===== QUIZ ===== */
   let quizWords=[],quizIndex=0,quizCorrect=0,quizWrong=0,quizAnswered=false;
@@ -995,7 +1323,6 @@ body::before{
     if(!quizWords.length)return;speak(quizWords[quizIndex].nl);
     spkBtn.classList.add("playing");setTimeout(()=>spkBtn.classList.remove("playing"),600);
   };
-  function norm(s){return s.trim().toLowerCase().replace(/\s+/g," ")}
 
   document.getElementById("quizCheckBtn").onclick=async()=>{
     if(quizAnswered)return;
@@ -1003,7 +1330,7 @@ body::before{
     const ea=norm(document.getElementById("quizEnInput").value);
     if(!na&&!ea){showToast("Schrijf je antwoord","error");return}
     quizAnswered=true;const w=quizWords[quizIndex];
-    const nOk=na===norm(w.nl),eOk=ea===norm(w.en),ok=nOk&&eOk;
+    const nOk=matchesAny(na,w.nl),eOk=matchesAny(ea,w.en),ok=nOk&&eOk;
     const fb=document.getElementById("quizFeedback");
     if(ok){
       quizCorrect++;fb.className="quiz-feedback show is-correct";
@@ -1086,7 +1413,12 @@ body::before{
 
   /* ===== INIT ===== */
   openDB().then(async()=>{
-    allWords=await getAllWords();renderCards();updateCsvStatus();
+    allWords=await getAllWords();
+    renderCards();
+    const hasToken=!!localStorage.getItem("gh_token");
+    const lastSync=localStorage.getItem("gh_last_sync");
+    if(hasToken&&lastSync)updateSyncDot("ok");
+    else if(hasToken)updateSyncDot("idle");
   }).catch(err=>{console.error("DB:",err);showToast("Database fout","error")});
 
 })();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'woordenschat-v3';
+const CACHE_NAME = 'woordenschat-v4';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
